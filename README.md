@@ -1,134 +1,90 @@
-# TOPSIS Evaluation of Pre-trained Models for Sentiment Classification
+# TOPSIS-Based Evaluation of Pre-Trained Models for Text Classification
 
 ## Overview
+This project applies the *TOPSIS (Technique for Order of Preference by Similarity to Ideal Solution)* method to evaluate and rank pre-trained transformer models for *IMDB Sentiment Classification*. The evaluation considers multiple performance metrics and selects the best model based on a weighted decision-making approach.
 
-In this project, we evaluated several pre-trained models for sentiment classification on the IMDB dataset using the **TOPSIS (Technique for Order of Preference by Similarity to Ideal Solution)** method. We utilized four different models from Hugging Face's `transformers` library: BERT, RoBERTa, DistilBERT, and ALBERT. The models were compared based on multiple performance metrics including accuracy, precision, recall, F1-score, inference time, and model size.
+## Dataset
+- *IMDB Sentiment Analysis Dataset* (from Hugging Face datasets library)
+- Contains *movie reviews* labeled as *positive (1)* or *negative (0)*
+- The dataset is *tokenized* using the bert-base-uncased tokenizer.
+- Training set size: *1000 samples*
+- Test set size: *200 samples*
 
-## Steps
+## Models Evaluated
+The following *pre-trained transformer models* are evaluated:
 
-### 1. Install Required Libraries
+| Model     | Hugging Face Model Name |
+|-----------|------------------------|
+| *BERT*       | bert-base-uncased   |
+| *RoBERTa*    | roberta-base        |
+| *DistilBERT* | distilbert-base-uncased |
+| *ALBERT*     | albert-base-v2 |
 
-The following libraries are required for the project:
+## Metrics Used
+The models are evaluated based on the following performance metrics:
+- *Accuracy*
+- *Precision*
+- *Recall*
+- *F1-score*
+- *Inference Time (Placeholder)*
+- *Model Size (Placeholder)*
 
-- `transformers`
-- `datasets`
-- `scikit-learn`
-- `numpy`
-- `matplotlib`
+## TOPSIS Method
+TOPSIS is used to rank the models based on the above metrics. The criteria are weighted as follows:
 
-You can install them using the following command:
+| Metric        | Weight |
+|--------------|--------|
+| Accuracy     | 0.30   |
+| Precision    | 0.20   |
+| Recall       | 0.20   |
+| F1-score     | 0.20   |
+| Inference Time | 0.05   |
+| Model Size   | 0.05   |
 
-```bash
-pip install transformers datasets scikit-learn numpy matplotlib
-### *2. Load the IMDB Dataset*
-We load the IMDB dataset using the datasets library. The dataset contains movie reviews labeled as positive or negative.
+### Steps:
+1. *Dataset Loading & Tokenization*
+2. *Fine-Tuning & Evaluation of Pre-Trained Models*
+3. *Normalization & Weighting of Evaluation Metrics*
+4. *Computing Ideal Best and Worst Values*
+5. *Calculating TOPSIS Score & Ranking Models*
+6. *Visualizing Results with a Bar Chart*
 
-python
-Copy
-Edit
-from datasets import load_dataset
-
-dataset = load_dataset("imdb")
-3. Tokenization
-We used the AutoTokenizer from the transformers library to tokenize the input text and convert it into the format required by the models.
-
-python
-Copy
-Edit
-from transformers import AutoTokenizer
-
-tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
-
-def tokenize_function(examples):
-    return tokenizer(examples["text"], padding="max_length", truncation=True)
-
-dataset = dataset.map(tokenize_function, batched=True)
-dataset.set_format(type='torch', columns=['input_ids', 'attention_mask', 'label'])
-4. Model Selection
-We compared the following models:
-
-BERT (bert-base-uncased)
-RoBERTa (roberta-base)
-DistilBERT (distilbert-base-uncased)
-ALBERT (albert-base-v2)
-Each model was used for training and evaluation on the IMDB dataset.
-
-5. Model Training and Evaluation
-Each model was trained and evaluated using the Trainer class from the transformers library. We evaluated the models on the test set and computed performance metrics such as accuracy, precision, recall, and F1-score.
-
-python
-Copy
-Edit
-from transformers import AutoModelForSequenceClassification, Trainer, TrainingArguments
-from sklearn.metrics import accuracy_score, precision_recall_fscore_support
-
-def compute_metrics(eval_pred):
-    logits, labels = eval_pred
-    predictions = np.argmax(logits, axis=-1)
-    acc = accuracy_score(labels, predictions)
-    precision, recall, f1, _ = precision_recall_fscore_support(labels, predictions, average='weighted')
-    return {"accuracy": acc, "precision": precision, "recall": recall, "f1": f1}
-6. Apply TOPSIS
-We applied the TOPSIS method to rank the models based on their performance. The following metrics were considered:
-
-Accuracy
-Precision
-Recall
-F1-score
-Inference Time
-Model Size
-The models were normalized, weighted, and evaluated using the TOPSIS score. The final ranking was based on these scores.
-
-python
-Copy
-Edit
-# Normalize the data, calculate ideal best and worst, and compute TOPSIS scores
-norm_data = np.nan_to_num(data / np.sqrt((data**2).sum(axis=0)))
-weighted_data = norm_data * weights
-ideal_best = np.max(weighted_data, axis=0) * benefit_criteria + np.min(weighted_data, axis=0) * (1 - np.array(benefit_criteria))
-ideal_worst = np.min(weighted_data, axis=0) * benefit_criteria + np.max(weighted_data, axis=0) * (1 - np.array(benefit_criteria))
-
-distance_best = np.sqrt(((weighted_data - ideal_best) ** 2).sum(axis=1))
-distance_worst = np.sqrt(((weighted_data - ideal_worst) ** 2).sum(axis=1))
-
-topsis_scores = np.nan_to_num(distance_worst / (distance_best + distance_worst))
-rankings = np.argsort(topsis_scores)[::-1] + 1
-7. Results
-The models were ranked based on the TOPSIS scores, and a bar chart was generated to visualize the performance.
-
-python
-Copy
-Edit
-import matplotlib.pyplot as plt
-
-plt.figure(figsize=(10, 5))
-plt.bar(results_df['Model'], results_df['TOPSIS Score'], color=['blue', 'green', 'red', 'purple'])
-plt.xlabel("Models")
-plt.ylabel("TOPSIS Score")
-plt.title("TOPSIS Ranking of Text Classification Models")
-plt.show()
-8. Final Rankings
-The final rankings of the models based on the TOPSIS evaluation are displayed in a table:
-
-python
-Copy
-Edit
-results_df = pd.DataFrame({
-    'Model': list(models.keys()),
-    'TOPSIS Score': topsis_scores,
-    'Rank': rankings
-}).sort_values(by='TOPSIS Score', ascending=False)
-
-print(results_df)
-Folder Structure
+## Installation & Usage
+### Prerequisites
+Ensure you have Python installed along with the following libraries:
 bash
-Copy
-Edit
-.
-├── X_train.csv                  # Training data
-├── X_test.csv                   # Test data
-├── submission.csv               # Predictions for submission
-└── model_script.py              # Python script for preprocessing, training, and evaluation
-Conclusion
-This project demonstrated the application of TOPSIS for evaluating pre-trained models on a sentiment classification task. By using this method, we were able to rank multiple models based on various performance metrics, helping to identify the best performing model for the task.
+pip install numpy pandas matplotlib transformers datasets scikit-learn torch
 
+
+### Running the Script
+Execute the following command:
+bash
+python topsis_text_classification.py
+
+
+### Expected Output
+1. *Table of Model Rankings* (Example Output):
+bash
+       Model  TOPSIS Score  Rank
+0      BERT       0.7823     1
+1  RoBERTa       0.7651     2
+2  ALBERT       0.7486     3
+3  DistilBERT       0.7204     4
+
+2. *Bar Chart Visualization of Model Rankings*
+
+## Results Interpretation
+- *Higher TOPSIS score* indicates *better overall performance*.
+- *Accuracy & F1-score* have the highest weights, influencing rankings the most.
+- *Inference time & model size* have a minor impact due to their lower weights.
+
+## Contributions
+- Developed by: *[Your Name]*
+- Institution: *Thapar Institute of Engineering and Technology*
+- Contact: *[Your Email]*
+
+## License
+This project is open-source and available under the *MIT License*.
+
+---
+Feel free to modify this README as needed. 🚀
