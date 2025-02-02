@@ -20,7 +20,7 @@ You can install them using the following command:
 
 ```bash
 pip install transformers datasets scikit-learn numpy matplotlib
-2. Load the IMDB Dataset
+### *2. Load the IMDB Dataset*
 We load the IMDB dataset using the datasets library. The dataset contains movie reviews labeled as positive or negative.
 
 python
@@ -132,15 +132,3 @@ Edit
 Conclusion
 This project demonstrated the application of TOPSIS for evaluating pre-trained models on a sentiment classification task. By using this method, we were able to rank multiple models based on various performance metrics, helping to identify the best performing model for the task.
 
-go
-Copy
-Edit
-
-### Key Formatting:
-
-1. **Headings**: Use `##` for sections and `###` for subsections.
-2. **Code Blocks**: Use triple backticks (```) for code snippets.
-3. **Lists**: Use `-` for bullet points or `1.` for ordered lists.
-4. **Inline Code**: Wrap function names or model names in single backticks (`).
-
-This will create a structured and readable README for your project. You can copy and paste this directly into your project’s README file.
